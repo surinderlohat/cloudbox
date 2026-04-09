@@ -97,14 +97,47 @@ wsl --list --verbose
 
 ---
 
-### Step 4 — SSH Into the Server
+### Step 4 — SSH Into the Server (Optional)
 
+> SSH is **optional** — skip this step if you just want to use `wsl -d AmazonLinux2023` to access the server directly.
+
+If you want to SSH into the server just like a real EC2 instance, follow these steps:
+
+**Inside AL2023, install and start SSH:**
 ```bash
-# Set password for ec2-user first (inside AL2023)
+# Install OpenSSH server
+sudo dnf install -y openssh-server
+
+# Generate SSH host keys
+sudo ssh-keygen -A
+
+# Start SSH service
+sudo systemctl start sshd
+
+# Enable SSH to auto-start on boot
+sudo systemctl enable sshd
+
+# Set a password for ec2-user (required for SSH login)
 sudo passwd ec2-user
 
-# SSH from Windows Terminal
+# Verify SSH is running
+sudo systemctl status sshd
+```
+
+**Now SSH from Windows Terminal:**
+```bash
 ssh ec2-user@localhost -p 22
+```
+
+**Optional — Use SSH keys instead of password (same as real EC2):**
+```bash
+# Generate key pair on Windows Terminal
+ssh-keygen -t rsa -b 4096
+
+# Copy public key into AL2023
+cat /mnt/c/Users/<your-username>/.ssh/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys
+chmod 600 /home/ec2-user/.ssh/authorized_keys
+chmod 700 /home/ec2-user/.ssh
 ```
 
 ---
